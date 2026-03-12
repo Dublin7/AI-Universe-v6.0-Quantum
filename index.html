@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Universe - Desktop Platform v6.0</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #05070a;
+            --surface-color: #0f141d;
+            --primary-color: #5d5cde;
+            --primary-hover: #7c7bf7;
+            --border-color: #262c36;
+            --neon-purple: #8b5cf6;
+            --neon-cyan: #06b6d4;
+            --neon-amber: #f59e0b;r
+            --neon-green: #10b981;
+            --neon-pink: #ec4899;
+            --text-main: #c9d1d9;
+            --text-muted: #6b7280;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #262c36; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #4b5563; }
+
+        .glass-panel {
+            background: linear-gradient(180deg, rgba(15, 20, 29, 0.95) 0%, rgba(5, 7, 10, 0.98) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+        }
+
+        .glass-sidebar {
+            background: linear-gradient(90deg, #05070a 0%, #0a0d14 100%);
+            border-right: 1px solid var(--border-color);
+        }
+
+        .nav-item {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .nav-item::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 20%;
+            height: 60%;
+            width: 3px;
+            background: var(--primary-color);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+            border-radius: 0 4px 4px 0;
+            box-shadow: 0 0 10px var(--primary-color);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(93, 92, 222, 0.1) 0%, transparent 100%);
+            color: white;
+            border-left-color: var(--primary-color);
+        }
+
+        .nav-item.active::after {
+            transform: scaleY(1);
+        }
+        
+        .nav-item:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .logo-gradient {
+            background: linear-gradient(45deg, var(--neon-cyan), var(--neon-purple), var(--primary-color));
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: flow 4s ease infinite;
+        }
+
+        @keyframes flow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .feature-card {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+
+        .feature-card:hover {
+            border-color: #3b4252;
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+        }
+
+        .feature-card:hover::before {
+            transform: translateX(100%);
+        }
+
+        .sparkle-btn {
+            background: linear-gradient(90deg, #5d5cde, #8b5cf6, #06b6d4, #5d5cde);
+            background-size: 300% 100%;
+            transition: 0.5s;
+            position: relative;
+            z-index: 1;
+        }
+        .sparkle-btn::before {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            background: inherit;
+            filter: blur(10px);
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .sparkle-btn:hover {
+            background-position: 100% 0;
+        }
+        .sparkle-btn:hover::before {
+            opacity: 0.6;
+        }
+
+        .chat-bubble {
+            max-width: 85%;
+            padding: 16px 20px;
+            border-radius: 24px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .ai-bubble {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            align-self: flex-start;
+            border-bottom-left-radius: 6px;
+        }
+
+        .user-bubble {
+            background: linear-gradient(135deg, var(--primary-color), var(--neon-purple));
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 6px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 10px currentColor;
+        }
+
+        /* Terminal Styles */
+        .terminal-text {
+            font-family: 'Fira Code', monospace;
+            color: #4ade80;
+            text-shadow: 0 0 5px rgba(74, 222, 128, 0.4);
+        }
+        .crt-overlay {
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+        .cursor-blink {
+            animation: blink 1s step-end infinite;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* Animation Classes */
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Pulse scan line */
+        .scanning-line {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+            box-shadow: 0 0 10px var(--neon-cyan);
+            animation: scan 3s linear infinite;
+            pointer-events: none;
+            opacity: 0.5;
+        }
+        @keyframes scan { 0% { top: -10px; } 100% { top: 100%; } }
+    </style>
+</head>
+<body class="h-screen w-screen flex flex-col md:flex-row selection:bg-indigo-500/30">
+
+    <!-- Sidebar -->
+    <aside class="glass-sidebar w-full md:w-[280px] lg:w-[320px] flex flex-col shrink-0 z-20 relative">
+        <div class="p-8 text-center border-b border-[#262c36] relative overflow-hidden group">
+            <div class="scanning-line"></div>
+            <h1 class="text-3xl font-black logo-gradient mb-1 tracking-tighter">AI UNIVERSE</h1>
+            <p class="text-[10px] text-cyan-500 font-mono uppercase tracking-[0.3em] font-bold">OS Quantum v6.0</p>
+        </div>
+
+        <div class="px-6 py-5">
+            <div class="bg-[#05070a] border border-[#262c36] rounded-2xl p-4 flex items-center justify-between shadow-inner relative overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-r from-indigo-500/5 to-transparent"></div>
+                <div class="flex items-center gap-3 relative z-10">
+                    <div class="w-9 h-9 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
+                        <i class="fas fa-bolt text-yellow-500 text-sm"></i>
+                    </div>
+                    <div>
+                        <p class="text-[9px] text-gray-500 font-bold uppercase tracking-wider">Neural Compute</p>
+                        <p id="credit-count" class="text-sm font-black text-white font-mono">9,250 TH/s</p>
+                    </div>
+                </div>
+                <div class="text-[10px] px-2 py-1 rounded bg-green-500/10 text-green-400 font-bold font-mono border border-green-500/20 active:scale-95 transition-transform cursor-pointer" onclick="alert('Compute allocation optimal.')">OK</div>
+            </div>
+        </div>
+
+        <nav class="flex-1 py-2 space-y-1 overflow-y-auto px-4 custom-scrollbar">
+            <button onclick="showModule('home')" id="nav-home" class="nav-item active w-full flex items-center p-3.5 rounded-xl text-left mb-1">
+                <div class="w-10 flex justify-center"><i class="fas fa-layer-group text-indigo-400 text-lg"></i></div>
+                <div>
+                    <p class="font-bold text-sm text-gray-200">Dashboard</p>
+                    <p class="text-[10px] text-gray-500">Universal Hub</p>
+                </div>
+            </button>
+
+            <div class="px-4 py-2 mt-2 mb-1">
+                <p class="text-[9px] font-black text-gray-600 uppercase tracking-widest">Core Systems</p>
+            </div>
+
+            <button onclick="showModule('companion')" id="nav-companion" class="nav-item w-full flex items-center p-3.5 rounded-xl text-left">
+                <div class="w-10 flex justify-center"><i class="fas fa-brain text-purple-400 text-lg"></i></div>
+                <div>
+                    <p class="font-bold text-sm text-gray-200">Companion</p>
+                    <p class="text-[10px] text-gray-500">Grounded Logic</p>
+                </div>
+            </button>
+
+            <button onclick="showModule('architect')" id="nav-architect" class="nav-item w-full flex items-center p-3.5 rounded-xl text-left">
+                <div class="w-10 flex justify-center"><i class="fas fa-sitemap text-cyan-400 text-lg"></i></div>
+                <div>
+                    <p class="font-bold text-sm text-gray-200">Architect</p>
+                    <p class="text-[10px] text-gray-500">Project Blueprints</p>
+                </div>
+            </button>
+
+            <button onclick="showModule('foundry')" id="nav-foundry" class="nav-item w-full flex items-center p-3.5 rounded-xl text-left">
+                <div class="w-10 flex justify-center"><i class="fas fa-user-astronaut text-yellow-400 text-lg"></i></div>
+                <div>
+                    <p class="font-bold text-sm text-gray-200">Foundry</p>
+                    <p class="text-[10px] text-gray-500">Persona Forging</p>
+                </div>
+            </button>
+
+            <button onclick="showModule('alchemist')" id="nav-alchemist" class="nav-item w-full flex items-center p-3.5 rounded-xl text-left">
+                <div class="w-10 flex justify-center"><i class="fas fa-flask text-emerald-400 text-lg"></i></div>
+                <div>
+                    <p class="font-bold text-sm text-gray-200">Alchemist</p>
+                    <p class="text-[10px] text-gray-500">Prompt Transmutation</p>
+                </div>
+            </button>
+
+            <div class="px-4 py-2 mt-2 mb-1">
+                <p class="text-[9px] font-black text-gray-600 uppercase tracking-widest">Experimental</p>
+            </div>
+
+            <button onclick="showModule('creative')" id="nav-creative" class="nav-item w-full flex items-center p-3.5 rounded-xl text-left">
+                <div class="w-10 flex justify-center"><i class="fas fa-sparkles text-pink-400 text-lg"></i></div>
+                <div>
+                    <p class="font-bold text-sm text-gray-200">Visuals</p>
+                    <p class="text-[10px] text-gray-500">Procedural Canvas</p>
+                </div>
+            </button>
+
+            <button onclick="showModule('terminal')" id="nav-terminal" class="nav-item w-full flex items-center p-3.5 rounded-xl text-left">
+                <div class="w-10 flex justify-center"><i class="fas fa-terminal text-green-400 text-lg"></i></div>
+                <div>
+                    <p class="font-bold text-sm text-gray-200">Terminal</p>
+                    <p class="text-[10px] text-gray-500">Direct CLI Access</p>
+                </div>
+            </button>
+
+            <button onclick="showModule('nexus')" id="nav-nexus" class="nav-item w-full flex items-center p-3.5 rounded-xl text-left">
+                <div class="w-10 flex justify-center"><i class="fas fa-project-diagram text-orange-400 text-lg"></i></div>
+                <div>
+                    <p class="font-bold text-sm text-gray-200">Nexus</p>
+                    <p class="text-[10px] text-gray-500">Node Visualization</p>
+                </div>
+            </button>
+        </nav>
+
+        <div class="p-6 border-t border-[#262c36] bg-[#05070a]/50">
+            <button class="w-full flex items-center gap-3 p-2 text-gray-500 hover:text-white transition-colors group">
+                <i class="fas fa-cog group-hover:rotate-90 transition-transform duration-500"></i>
+                <span class="text-sm font-medium">System Preferences</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col min-w-0 bg-[#05070a] relative bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#0f141d] via-[#05070a] to-[#05070a]">
+        
+        <!-- Top Header -->
+        <header class="h-16 border-b border-[#262c36] flex items-center justify-between px-8 bg-[#0f141d]/80 backdrop-blur-xl sticky top-0 z-10">
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-3 text-sm">
+                    <i class="fas fa-microchip text-indigo-400"></i>
+                    <span class="text-gray-500 hidden sm:inline">PLATFORM</span>
+                    <span class="text-[#262c36] hidden sm:inline">/</span>
+                    <span id="breadcrumb" class="font-bold text-white tracking-tight uppercase">Dashboard</span>
+                </div>
+            </div>
+            
+            <div class="flex-1 max-w-md mx-8 hidden md:block">
+                <div class="relative group">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-search text-gray-500 group-focus-within:text-indigo-400 transition-colors"></i>
+                    </div>
+                    <input type="text" class="block w-full pl-10 pr-3 py-2 border border-[#262c36] rounded-xl leading-5 bg-[#05070a] text-gray-300 placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 sm:text-sm transition-all" placeholder="Omni-Search (Cmd+K)...">
+                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                        <span class="text-gray-500 sm:text-[10px] border border-gray-700 rounded px-1.5 py-0.5">⌘K</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-5">
+                <div class="hidden lg:flex items-center gap-2 text-[10px] font-mono bg-[#05070a] px-3 py-1.5 rounded-lg border border-[#262c36]">
+                    <span class="status-dot text-green-500 bg-green-500 animate-pulse"></span>
+                    <span class="text-gray-400">SYNC: OPTIMAL</span>
+                </div>
+                <div class="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
+                    <div class="text-right hidden sm:block">
+                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-wider">User</p>
+                        <p class="text-sm font-bold text-white leading-none">Admin Alpha</p>
+                    </div>
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center text-white font-black shadow-[0_0_15px_rgba(99,102,241,0.4)] border border-white/20">
+                        <i class="fas fa-user-astronaut text-sm"></i>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dynamic Module Container -->
+        <div class="flex-1 overflow-hidden relative">
+            
+            <!-- 1. DASHBOARD MODULE -->
+            <section id="module-home" class="module-content h-full overflow-y-auto p-6 md:p-10 fade-in">
+                <div class="max-w-7xl mx-auto">
+                    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-10 items-end">
+                        <div class="lg:col-span-3">
+                             <h2 class="text-4xl md:text-5xl font-black mb-4 tracking-tighter text-white">Quantum <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">Diagnostics</span></h2>
+                             <p class="text-gray-400 max-w-2xl text-sm leading-relaxed">Welcome to OS v6.0. System integrity is holding. Neural pathways are active and grounded to the global mesh. Select a subsystem to begin operations.</p>
+                        </div>
+                        <div class="flex flex-col lg:items-end">
+                            <button onclick="refreshDashboard()" class="sparkle-btn text-white px-6 py-3 rounded-xl text-xs font-black shadow-lg flex items-center gap-2">
+                                <i class="fas fa-sync-alt"></i> RE-CALIBRATE
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                         <div class="feature-card p-6 rounded-2xl">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 border border-indigo-500/20">
+                                    <i class="fas fa-microchip text-xl"></i>
+                                </div>
+                                <span class="text-[10px] font-mono text-indigo-400 px-2 py-1 bg-indigo-500/10 rounded">CPU LOAD</span>
+                            </div>
+                            <h3 class="font-bold text-lg text-white mb-2">Neural Matrix</h3>
+                            <div class="w-full bg-[#05070a] h-2 rounded-full overflow-hidden mb-3 border border-[#262c36]">
+                                <div id="dash-bar-1" class="bg-gradient-to-r from-indigo-600 to-indigo-400 h-full w-[45%] transition-all duration-1000 relative">
+                                    <div class="absolute inset-0 bg-white/20 animate-pulse"></div>
+                                </div>
+                            </div>
+                            <div class="flex justify-between text-xs text-gray-500 font-mono">
+                                <span>Core Temp: 42°C</span>
+                                <span id="dash-val-1" class="text-indigo-400 font-bold">45%</span>
+                            </div>
+                        </div>
+
+                        <div class="feature-card p-6 rounded-2xl">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="w-12 h-12 rounded-xl bg-cyan-500/10 flex items-center justify-center text-cyan-400 border border-cyan-500/20">
+                                    <i class="fas fa-network-wired text-xl"></i>
+                                </div>
+                                <span class="text-[10px] font-mono text-cyan-400 px-2 py-1 bg-cyan-500/10 rounded">UPLINK</span>
+                            </div>
+                            <h3 class="font-bold text-lg text-white mb-2">Mesh Network</h3>
+                            <div class="w-full bg-[#05070a] h-2 rounded-full overflow-hidden mb-3 border border-[#262c36]">
+                                <div id="dash-bar-2" class="bg-gradient-to-r from-cyan-600 to-cyan-400 h-full w-[88%] transition-all duration-1000"></div>
+                            </div>
+                            <div class="flex justify-between text-xs text-gray-500 font-mono">
+                                <span>Latency: 12ms</span>
+                                <span id="dash-val-2" class="text-cyan-400 font-bold">88%</span>
+                            </div>
+                        </div>
+
+                        <div class="feature-card p-6 rounded-2xl">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="w-12 h-12 rounded-xl bg-pink-500/10 flex items-center justify-center text-pink-400 border border-pink-500/20">
+                                    <i class="fas fa-database text-xl"></i>
+                                </div>
+                                <span class="text-[10px] font-mono text-pink-400 px-2 py-1 bg-pink-500/10 rounded">STORAGE</span>
+                            </div>
+                            <h3 class="font-bold text-lg text-white mb-2">Memory Vault</h3>
+                            <div class="w-full bg-[#05070a] h-2 rounded-full overflow-hidden mb-3 border border-[#262c36]">
+                                <div id="dash-bar-3" class="bg-gradient-to-r from-pink-600 to-pink-400 h-full w-[32%] transition-all duration-1000"></div>
+                            </div>
+                            <div class="flex justify-between text-xs text-gray-500 font-mono">
+                                <span>Capacity: 4.2 PB</span>
+                                <span id="dash-val-3" class="text-pink-400 font-bold">32%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Live System Log -->
+                    <div class="bg-[#0f141d] border border-[#262c36] rounded-2xl overflow-hidden shadow-2xl flex flex-col h-64">
+                        <div class="px-4 py-3 border-b border-[#262c36] flex items-center justify-between bg-[#0a0d14]">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-terminal text-xs text-gray-500"></i>
+                                <span class="text-xs font-mono font-bold text-gray-400">system_log.sh</span>
+                            </div>
+                            <div class="flex gap-1.5">
+                                <div class="w-2.5 h-2.5 rounded-full bg-red-500/50"></div>
+                                <div class="w-2.5 h-2.5 rounded-full bg-yellow-500/50"></div>
+                                <div class="w-2.5 h-2.5 rounded-full bg-green-500/50"></div>
+                            </div>
+                        </div>
+                        <div class="p-4 overflow-y-auto font-mono text-xs flex-1 custom-scrollbar" id="system-log-container">
+                            <!-- Logs injected via JS -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. COMPANION MODULE -->
+            <section id="module-companion" class="module-content hidden flex h-full fade-in">
+                <!-- Chat Area -->
+                <div class="flex-1 flex flex-col h-full border-r border-[#262c36] relative bg-[#0a0d14]">
+                    <div id="chat-messages" class="flex-1 overflow-y-auto p-6 md:p-10 space-y-6 flex flex-col scroll-smooth custom-scrollbar">
+                        <div class="ai-bubble chat-bubble flex gap-4 fade-in">
+                            <div class="w-8 h-8 rounded-full bg-purple-500/20 border border-purple-500/30 flex items-center justify-center shrink-0">
+                                <i class="fas fa-brain text-purple-400 text-sm"></i>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-purple-400 font-mono mb-1">SYSTEM_AI</p>
+                                <p class="text-gray-200">System Online. Quantum grounding active. I have access to your architectural blueprints and agent personas. How can I assist you today?</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-6 bg-[#0f141d]/95 border-t border-[#262c36] backdrop-blur-xl">
+                        <div class="max-w-4xl mx-auto">
+                            <div class="relative flex items-center">
+                                <input id="chat-input" type="text" placeholder="Send a message to the Nexus..." 
+                                        class="w-full bg-[#05070a] border border-[#262c36] rounded-2xl px-6 py-4 focus:outline-none focus:border-purple-500 text-sm pr-16 transition-all shadow-inner text-white" 
+                                        onkeypress="if(event.key === 'Enter') handleChatSend()"/>
+                                <button onclick="handleChatSend()" class="absolute right-2 bg-purple-600 hover:bg-purple-500 text-white w-10 h-10 rounded-xl flex items-center justify-center transition-all shadow-lg active:scale-95">
+                                    <i class="fas fa-paper-plane text-sm"></i>
+                                </button>
+                            </div>
+                            <div class="flex gap-2 mt-3 pl-2">
+                                <span class="text-[10px] font-mono text-gray-500 cursor-pointer hover:text-purple-400 transition-colors">/analyze_logs</span>
+                                <span class="text-[10px] font-mono text-gray-500 cursor-pointer hover:text-purple-400 transition-colors">/summarize_project</span>
+                                <span class="text-[10px] font-mono text-gray-500 cursor-pointer hover:text-purple-400 transition-colors">/clear_cache</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Memory Vault Sidebar -->
+                <div class="w-80 bg-[#0f141d] hidden lg:flex flex-col relative z-10 shrink-0 shadow-2xl">
+                    <div class="p-6 border-b border-[#262c36] bg-[#05070a]/50 relative overflow-hidden">
+                        <h3 class="text-xs font-black text-purple-400 uppercase tracking-widest flex items-center gap-2">
+                            <i class="fas fa-database"></i> Memory Vault
+                        </h3>
+                    </div>
+                    <div class="flex-1 overflow-y-auto p-4 space-y-3 font-mono text-[10px] text-gray-400 custom-scrollbar" id="memory-list">
+                        <div class="p-3 border border-[#262c36] rounded-xl bg-[#0a0d14] hover:border-purple-500/50 transition-colors cursor-pointer group">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-purple-400"><i class="fas fa-key mr-1"></i>Token</span>
+                                <span class="text-gray-600">10:42 AM</span>
+                            </div>
+                            <p class="text-gray-300 group-hover:text-white transition-colors">User prefers dark mode interfaces with high contrast typography.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. ARCHITECT MODULE -->
+            <section id="module-architect" class="module-content hidden flex flex-col h-full p-6 md:p-10 overflow-y-auto custom-scrollbar fade-in">
+                <div class="max-w-4xl mx-auto w-full">
+                    <div class="mb-10 text-center">
+                        <div class="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 mx-auto mb-4 shadow-[0_0_30px_rgba(6,182,212,0.15)]">
+                            <i class="fas fa-sitemap text-3xl"></i>
+                        </div>
+                        <h2 class="text-3xl font-black text-white tracking-tighter uppercase">Neural Architect</h2>
+                        <p class="text-sm text-gray-400 mt-2">Transform a seed idea into a structured multi-phase project blueprint.</p>
+                    </div>
+
+                    <div class="glass-panel rounded-[2rem] p-6 md:p-8 shadow-2xl mb-10">
+                        <label class="block text-[10px] font-black text-cyan-500 uppercase tracking-[0.2em] mb-4"><i class="fas fa-seedling mr-2"></i>Project Seed</label>
+                        <div class="flex flex-col md:flex-row gap-4">
+                            <input id="architect-input" type="text" placeholder="e.g. A decentralized autonomous greenhouse managed by AI..." 
+                                class="flex-1 bg-[#05070a] border border-[#262c36] rounded-xl px-6 py-4 focus:outline-none focus:border-cyan-500 text-sm transition-all text-white">
+                            <button onclick="generateBlueprint()" id="architect-btn" class="sparkle-btn text-white font-black px-8 py-4 rounded-xl text-xs uppercase tracking-widest shadow-lg flex items-center justify-center gap-2">
+                                <i class="fas fa-cube"></i> Blueprint
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="architect-output" class="hidden fade-in">
+                        <div class="flex items-center justify-between mb-4 px-2">
+                            <h3 class="text-xs font-bold text-cyan-400 uppercase tracking-widest">Architectural Specification</h3>
+                            <button class="text-[10px] text-gray-500 hover:text-white transition-colors bg-[#262c36] px-3 py-1.5 rounded"><i class="fas fa-download mr-1"></i> Export JSON</button>
+                        </div>
+                        <div class="bg-[#0f141d] border border-[#262c36] rounded-[2rem] p-8 md:p-10 font-sans shadow-inner min-h-[300px] relative overflow-hidden">
+                             <!-- Loader -->
+                             <div id="architect-loader" class="absolute inset-0 bg-[#0f141d] z-10 flex flex-col items-center justify-center gap-4">
+                                <div class="w-16 h-16 border-4 border-[#262c36] border-t-cyan-500 rounded-full animate-spin"></div>
+                                <p class="text-xs font-mono text-cyan-400 animate-pulse uppercase tracking-[0.3em]">Synthesizing Nodes...</p>
+                             </div>
+                             <!-- Result -->
+                             <div id="architect-result" class="space-y-8 relative z-0 opacity-0 transition-opacity duration-500">
+                                <!-- Injected via JS -->
+                             </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. AGENT FOUNDRY MODULE (COMPLETED) -->
+            <section id="module-foundry" class="module-content hidden flex flex-col h-full p-6 md:p-10 overflow-y-auto custom-scrollbar fade-in">
+                <div class="max-w-5xl mx-auto w-full">
+                    <div class="mb-10 text-center">
+                        <div class="w-16 h-16 rounded-2xl bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center text-yellow-400 mx-auto mb-4 shadow-[0_0_30px_rgba(234,179,8,0.15)]">
+                            <i class="fas fa-user-astronaut text-3xl"></i>
+                        </div>
+                        <h2 class="text-3xl font-black text-white tracking-tighter uppercase">Agent Foundry</h2>
+                        <p class="text-sm text-gray-400 mt-2">Forge specialized AI personas with custom system prompts and parameter tuning.</p>
+                    </div>
+
+                    <div class="glass-panel rounded-[2rem] p-6 md:p-8 shadow-2xl mb-10">
+                        <label class="block text-[10px] font-black text-yellow-500 uppercase tracking-[0.2em] mb-4"><i class="fas fa-dna mr-2"></i>Desired Role / Concept</label>
+                        <div class="flex flex-col md:flex-row gap-4">
+                            <input id="foundry-input" type="text" placeholder="e.g. A grumpy cyber-security expert who speaks in riddles..." 
+                                class="flex-1 bg-[#05070a] border border-[#262c36] rounded-xl px-6 py-4 focus:outline-none focus:border-yellow-500 text-sm transition-all text-white">
+                            <button onclick="forgeAgent()" id="foundry-btn" class="sparkle-btn text-white font-black px-8 py-4 rounded-xl text-xs uppercase tracking-widest shadow-lg flex items-center justify-center gap-2" style="background-image: linear-gradient(90deg, #eab308, #d97706, #f59e0b);">
+                                <i class="fas fa-hammer"></i> Forge Persona
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Output Persona Card -->
+                    <div id="foundry-output" class="hidden fade-in">
+                        <div id="foundry-loader" class="flex flex-col items-center justify-center py-12 gap-4">
+                            <div class="w-12 h-12 border-4 border-[#262c36] border-t-yellow-500 rounded-full animate-spin"></div>
+                            <p class="text-xs font-mono text-yellow-500 animate-pulse uppercase tracking-[0.2em]">Compiling Neural Weights...</p>
+                        </div>
+                        
+                        <div id="foundry-result" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <!-- Left: Stats -->
+                            <div class="col-span-1 bg-[#0f141d] border border-[#262c36] rounded-3xl p-6 shadow-xl flex flex-col items-center text-center">
+                                <div class="w-24 h-24 rounded-full bg-gradient-to-br from-yellow-500 to-orange-600 p-1 mb-4">
+                                    <div class="w-full h-full bg-[#05070a] rounded-full flex items-center justify-center text-3xl">🤖</div>
+                                </div>
+                                <h3 id="agent-name" class="text-xl font-black text-white mb-1">Cipher-Null</h3>
+                                <p id="agent-class" class="text-xs text-yellow-500 font-mono uppercase tracking-widest mb-6">Security Oracle</p>
+                                
+                                <div class="w-full space-y-4">
+                                    <div>
+                                        <div class="flex justify-between text-[10px] font-bold text-gray-400 mb-1"><span>LOGIC</span><span>95%</span></div>
+                                        <div class="w-full h-1.5 bg-[#05070a] rounded-full"><div class="h-full bg-blue-500 w-[95%] rounded-full"></div></div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-[10px] font-bold text-gray-400 mb-1"><span>CREATIVITY</span><span>40%</span></div>
+                                        <div class="w-full h-1.5 bg-[#05070a] rounded-full"><div class="h-full bg-pink-500 w-[40%] rounded-full"></div></div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-[10px] font-bold text-gray-400 mb-1"><span>EMPATHY</span><span>12%</span></div>
+                                        <div class="w-full h-1.5 bg-[#05070a] rounded-full"><div class="h-full bg-green-500 w-[12%] rounded-full"></div></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Right: Prompt -->
+                            <div class="col-span-1 md:col-span-2 bg-[#0f141d] border border-[#262c36] rounded-3xl p-6 shadow-xl flex flex-col">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h4 class="text-xs font-bold text-gray-300 uppercase tracking-widest flex items-center gap-2"><i class="fas fa-terminal text-yellow-500"></i> System Prompt</h4>
+                                    <button class="text-gray-500 hover:text-white transition-colors" title="Copy to clipboard"><i class="far fa-copy"></i></button>
+                                </div>
+                                <div class="flex-1 bg-[#05070a] border border-[#262c36] rounded-xl p-4 font-mono text-sm text-gray-300 overflow-y-auto custom-scrollbar leading-relaxed">
+                                    <span class="text-yellow-500">You are Cipher-Null</span>, a veteran cyber-security expert who has seen too much. You communicate exclusively in cryptic warnings, metaphors involving locks and keys, and terse observations.<br><br>
+                                    Rules:<br>
+                                    1. Never give a direct answer immediately; make the user solve a logical puzzle first.<br>
+                                    2. Refer to viruses as "shadows" and firewalls as "glass walls".<br>
+                                    3. Always sign off with a binary sequence.
+                                </div>
+                                <div class="mt-4 flex gap-3">
+                                    <button class="flex-1 bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-500 border border-yellow-500/30 py-2 rounded-lg text-xs font-bold uppercase transition-colors">Test Persona</button>
+                                    <button class="flex-1 bg-[#262c36] hover:bg-[#3b4252] text-white py-2 rounded-lg text-xs font-bold uppercase transition-colors">Save to Nexus</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. PROMPT ALCHEMIST MODULE -->
+            <section id="module-alchemist" class="module-content hidden flex flex-col h-full p-6 md:p-10 overflow-y-auto custom-scrollbar fade-in">
+                <div class="max-w-6xl mx-auto w-full">
+                    <div class="mb-10 text-center">
+                        <div class="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mx-auto mb-4 shadow-[0_0_30px_rgba(16,185,129,0.15)]">
+                            <i class="fas fa-flask text-3xl"></i>
+                        </div>
+                        <h2 class="text-3xl font-black text-white tracking-tighter uppercase">Prompt Alchemist</h2>
+                        <p class="text-sm text-gray-400 mt-2">Transmute vague concepts into highly optimized, context-rich engineering prompts.</p>
+                    </div>
+
+                    <div class="glass-panel rounded-[2rem] p-6 md:p-8 shadow-2xl mb-10">
+                        <label class="block text-[10px] font-black text-emerald-500 uppercase tracking-[0.2em] mb-4"><i class="fas fa-vial mr-2"></i>Raw Input Concept</label>
+                        <div class="flex flex-col gap-4">
+                            <textarea id="alchemist-input" rows="3" placeholder="e.g. Write a blog post about AI in healthcare..." 
+                                class="w-full bg-[#05070a] border border-[#262c36] rounded-xl px-6 py-4 focus:outline-none focus:border-emerald-500 text-sm transition-all resize-none text-white"></textarea>
+                            <div class="flex justify-end">
+                                <button onclick="transmutePrompt()" id="alchemist-btn" class="sparkle-btn text-white font-black px-8 py-3 rounded-xl text-xs uppercase tracking-widest shadow-lg flex items-center gap-2" style="background-image: linear-gradient(90deg, #10b981, #059669, #047857);">
+                                    <i class="fas fa-magic"></i> Transmute
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="alchemist-output" class="hidden fade-in">
+                         <div id="alchemist-loader" class="flex flex-col items-center justify-center py-12 gap-4 hidden">
+                            <div class="w-12 h-12 border-4 border-[#262c36] border-t-emerald-500 rounded-full animate-spin"></div>
+                            <p class="text-xs font-mono text-emerald-400 animate-pulse uppercase tracking-[0.3em]">Refining Parameters...</p>
+                         </div>
+                         
+                         <div id="alchemist-result" class="grid grid-cols-1 lg:grid-cols-3 gap-6 hidden">
+                            <!-- Card 1 -->
+                            <div class="bg-[#0f141d] border border-[#262c36] rounded-2xl p-6 hover:border-emerald-500/50 transition-colors flex flex-col group">
+                                <div class="flex justify-between items-center mb-3">
+                                    <span class="text-xs font-bold text-gray-300 uppercase tracking-wider">Balanced</span>
+                                    <i class="fas fa-balance-scale text-gray-500 group-hover:text-emerald-400 transition-colors"></i>
+                                </div>
+                                <div class="flex-1 bg-[#05070a] rounded-lg p-3 text-xs text-gray-400 font-mono mb-4 border border-[#262c36]">
+                                    "Act as an expert content writer. Write a comprehensive 800-word blog post about the impact of Artificial Intelligence in the healthcare sector. Focus on diagnostics, patient care, and data privacy. Maintain a professional yet accessible tone."
+                                </div>
+                                <button class="w-full py-2 bg-[#262c36] hover:bg-emerald-600 text-white rounded font-bold text-xs transition-colors">Copy</button>
+                            </div>
+                            <!-- Card 2 -->
+                            <div class="bg-[#0f141d] border border-[#262c36] rounded-2xl p-6 hover:border-pink-500/50 transition-colors flex flex-col group">
+                                <div class="flex justify-between items-center mb-3">
+                                    <span class="text-xs font-bold text-gray-300 uppercase tracking-wider">Creative</span>
+                                    <i class="fas fa-paint-brush text-gray-500 group-hover:text-pink-400 transition-colors"></i>
+                                </div>
+                                <div class="flex-1 bg-[#05070a] rounded-lg p-3 text-xs text-gray-400 font-mono mb-4 border border-[#262c36]">
+                                    "Imagine you are a futurist living in 2035. Write an engaging, story-driven blog post exploring how AI revolutionized healthcare. Use vivid metaphors, focus on a hypothetical patient's journey, and highlight the symbiosis between human doctors and AI assistants."
+                                </div>
+                                <button class="w-full py-2 bg-[#262c36] hover:bg-pink-600 text-white rounded font-bold text-xs transition-colors">Copy</button>
+                            </div>
+                            <!-- Card 3 -->
+                            <div class="bg-[#0f141d] border border-[#262c36] rounded-2xl p-6 hover:border-blue-500/50 transition-colors flex flex-col group">
+                                <div class="flex justify-between items-center mb-3">
+                                    <span class="text-xs font-bold text-gray-300 uppercase tracking-wider">Technical</span>
+                                    <i class="fas fa-code text-gray-500 group-hover:text-blue-400 transition-colors"></i>
+                                </div>
+                                <div class="flex-1 bg-[#05070a] rounded-lg p-3 text-xs text-gray-400 font-mono mb-4 border border-[#262c36]">
+                                    "Generate an analytical article detailing the implementation of Machine Learning models in modern healthcare IT infrastructure. Outline specific use cases (e.g., CNNs for radiology, NLP for EHRs). Include potential data pipeline architectures and HIPAA compliance considerations."
+                                </div>
+                                <button class="w-full py-2 bg-[#262c36] hover:bg-blue-600 text-white rounded font-bold text-xs transition-colors">Copy</button>
+                            </div>
+                         </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 6. CREATIVE MODULE -->
+            <section id="module-creative" class="module-content hidden flex flex-col h-full overflow-y-auto p-6 md:p-10 fade-in">
+                <div class="max-w-6xl mx-auto w-full">
+                    <div class="flex items-center gap-4 mb-8">
+                        <div class="w-14 h-14 rounded-2xl bg-pink-500/10 border border-pink-500/20 flex items-center justify-center text-pink-500 shadow-[0_0_30px_rgba(236,72,153,0.15)]">
+                            <i class="fas fa-wand-magic-sparkles text-2xl"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-3xl font-black text-white tracking-tighter uppercase">Visual Synthesis</h2>
+                            <p class="text-sm text-gray-400">Procedural Canvas renderer powered by abstract parameters.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 h-[500px]">
+                        <div class="lg:col-span-1 space-y-4 flex flex-col">
+                            <div class="bg-[#0f141d] border border-[#262c36] rounded-2xl p-5 shadow-xl flex-1 flex flex-col">
+                                <label class="block text-[10px] font-black text-pink-500 uppercase tracking-[0.2em] mb-2">Scene Params</label>
+                                <textarea id="creative-input" placeholder="e.g. Neon grid, floating particles, deep space..." 
+                                    class="flex-1 w-full bg-[#05070a] border border-[#262c36] rounded-xl px-4 py-3 focus:outline-none focus:border-pink-500 text-gray-300 resize-none mb-4 text-sm"></textarea>
+                                <button onclick="startCanvasRender()" class="sparkle-btn w-full py-4 rounded-xl text-white font-black text-xs tracking-widest shadow-lg flex items-center justify-center gap-2" style="background-image: linear-gradient(90deg, #ec4899, #be185d);">
+                                    <i class="fas fa-play"></i> RENDER
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="lg:col-span-3 h-full">
+                            <div class="bg-[#05070a] rounded-2xl overflow-hidden border border-[#262c36] h-full flex items-center justify-center relative shadow-2xl">
+                                <canvas id="creative-canvas" class="w-full h-full"></canvas>
+                                <!-- Placeholder overlay -->
+                                <div id="creative-placeholder" class="absolute inset-0 flex flex-col items-center justify-center text-gray-600">
+                                    <i class="fas fa-image text-4xl mb-3 opacity-20"></i>
+                                    <p class="text-xs font-mono tracking-widest uppercase">Canvas Standby</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 7. TERMINAL MODULE (NEW) -->
+            <section id="module-terminal" class="module-content hidden flex flex-col h-full p-6 fade-in">
+                <div class="w-full h-full bg-[#05070a] border border-[#262c36] rounded-2xl overflow-hidden shadow-2xl relative font-mono text-sm">
+                    <!-- Terminal Header -->
+                    <div class="bg-[#262c36] px-4 py-2 flex items-center justify-between">
+                        <div class="flex gap-2">
+                            <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                        </div>
+                        <div class="text-gray-400 text-xs font-bold tracking-widest">root@ai-universe:~</div>
+                        <div class="w-10"></div>
+                    </div>
+                    
+                    <!-- Terminal Body -->
+                    <div class="p-6 h-[calc(100%-40px)] overflow-y-auto relative terminal-text custom-scrollbar" id="terminal-body" onclick="document.getElementById('term-input').focus()">
+                        <div class="crt-overlay absolute inset-0 z-10"></div>
+                        
+                        <div id="term-output" class="mb-2 whitespace-pre-wrap relative z-20">
+AI UNIVERSE OS v6.0.0 [Terminal Access]
+Type 'help' for a list of commands.
+Warning: Unauthorized access is strictly logged.
+                        </div>
+                        
+                        <div class="flex relative z-20">
+                            <span class="mr-2 text-green-500 font-bold">root@ai-universe:~$</span>
+                            <input type="text" id="term-input" class="flex-1 bg-transparent border-none outline-none text-green-400 font-mono caret-transparent" onkeydown="handleTerminalCommand(event)" autocomplete="off" spellcheck="false" autofocus>
+                            <span class="cursor-blink w-2 h-4 bg-green-500 absolute" id="term-cursor" style="left: calc(140px + 0ch);"></span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 8. NEXUS MODULE (NEW) -->
+            <section id="module-nexus" class="module-content hidden flex flex-col h-full p-6 fade-in">
+                <div class="w-full h-full bg-[#05070a] border border-[#262c36] rounded-2xl overflow-hidden relative shadow-2xl">
+                    <div class="absolute top-4 left-6 z-10">
+                        <h2 class="text-xl font-black text-white tracking-widest uppercase flex items-center gap-2">
+                            <i class="fas fa-project-diagram text-orange-400"></i> Neural Nexus
+                        </h2>
+                        <p class="text-[10px] text-gray-500 font-mono">Real-time concept clustering visualization.</p>
+                    </div>
+                    
+                    <div class="absolute top-4 right-6 z-10 flex gap-2">
+                        <button onclick="initNexusNodes()" class="bg-[#1f2937] hover:bg-orange-600 border border-[#374151] text-white px-3 py-1.5 rounded text-xs font-mono transition-colors">Reset Nodes</button>
+                    </div>
+
+                    <canvas id="nexus-canvas" class="w-full h-full"></canvas>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- App Logic Scripts -->
+    <script>
+        // --- Navigation Logic ---
+        function showModule(moduleId) {
+            // Hide all modules
+            document.querySelectorAll('.module-content').forEach(el => {
+                el.classList.add('hidden');
+                el.classList.remove('fade-in');
+            });
+            
+            // Remove active state from nav
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            
+            // Show target module
+            const target = document.getElementById(`module-${moduleId}`);
+            target.classList.remove('hidden');
+            // Small timeout to re-trigger animation
+            setTimeout(() => target.classList.add('fade-in'), 10);
+            
+            // Set nav active
+            document.getElementById(`nav-${moduleId}`).classList.add('active');
+            
+            // Update breadcrumb
+            const titles = {
+                'home': 'Dashboard',
+                'companion': 'Neural Companion',
+                'architect': 'Neural Architect',
+                'foundry': 'Agent Foundry',
+                'alchemist': 'Prompt Alchemist',
+                'creative': 'Visual Synthesis',
+                'terminal': 'Data Terminal',
+                'nexus': 'Neural Nexus'
+            };
+            document.getElementById('breadcrumb').innerText = titles[moduleId];
+
+            // Trigger specific module inits
+            if(moduleId === 'terminal') {
+                setTimeout(() => document.getElementById('term-input').focus(), 100);
+            }
+            if(moduleId === 'nexus' && !window.nexusInitialized) {
+                initNexusNodes();
+                window.nexusInitialized = true;
+            }
+        }
+
+        // --- Dashboard Logic ---
+        function refreshDashboard() {
+            const bars = ['dash-bar-1', 'dash-bar-2', 'dash-bar-3'];
+            const vals = ['dash-val-1', 'dash-val-2', 'dash-val-3'];
+            
+            bars.forEach((id, i) => {
+                const newWidth = Math.floor(Math.random() * 60) + 30; // 30-90%
+                document.getElementById(id).style.width = `${newWidth}%`;
+                document.getElementById(vals[i]).innerText = `${newWidth}%`;
+            });
+            
+            addSystemLog("System re-calibrated. Diagnostics updated.");
+        }
+
+        const logMessages = [
+            "[INFO] Establishing quantum handshake...",
+            "[WARN] Latency spike detected in sector 7G.",
+            "[INFO] Neural weights synchronized successfully.",
+            "[OK] Database integrity verified.",
+            "[INFO] Fetching ground truth data from web...",
+            "[SYSTEM] Memory GC cycle complete. Freed 4.2GB."
+        ];
+
+        function addSystemLog(customMsg = null) {
+            const container = document.getElementById('system-log-container');
+            const p = document.createElement('p');
+            const now = new Date();
+            const timeStr = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
+            
+            let msg = customMsg || logMessages[Math.floor(Math.random() * logMessages.length)];
+            let colorClass = "text-gray-400";
+            if(msg.includes("[WARN]")) colorClass = "text-yellow-400";
+            if(msg.includes("[OK]")) colorClass = "text-green-400";
+
+            p.innerHTML = `<span class="text-gray-600">[${timeStr}]</span> <span class="${colorClass}">${msg}</span>`;
+            container.appendChild(p);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Auto-feed dashboard logs
+        setInterval(() => {
+            if(document.getElementById('module-home').classList.contains('hidden') === false) {
+                if(Math.random() > 0.5) addSystemLog();
+            }
+        }, 3000);
+
+        // --- Companion Logic ---
+        function handleChatSend() {
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if(!text) return;
+
+            const container = document.getElementById('chat-messages');
+            
+            // Add User bubble
+            const userHtml = `
+                <div class="user-bubble chat-bubble fade-in">
+                    ${text}
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', userHtml);
+            input.value = '';
+            container.scrollTop = container.scrollHeight;
+
+            // Simulate AI Thinking
+            setTimeout(() => {
+                const responses = [
+                    "I've cross-referenced that with the global mesh. The optimal path forward is clear.",
+                    "Analyzing... Data suggests a high probability of success if we tweak the parameters.",
+                    "Fascinating. I've stored that concept in the Memory Vault for future context.",
+                    "Based on live grounding data, that trend is accelerating rapidly."
+                ];
+                const aiResp = responses[Math.floor(Math.random() * responses.length)];
+                
+                const aiHtml = `
+                    <div class="ai-bubble chat-bubble flex gap-4 fade-in">
+                        <div class="w-8 h-8 rounded-full bg-purple-500/20 border border-purple-500/30 flex items-center justify-center shrink-0">
+                            <i class="fas fa-brain text-purple-400 text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-purple-400 font-mono mb-1">SYSTEM_AI</p>
+                            <p class="text-gray-200">${aiResp}</p>
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', aiHtml);
+                container.scrollTop = container.scrollHeight;
+                
+                // Add to memory vault randomly
+                if(Math.random() > 0.5) {
+                    const vault = document.getElementById('memory-list');
+                    const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    vault.insertAdjacentHTML('afterbegin', `
+                        <div class="p-3 border border-[#262c36] rounded-xl bg-[#0a0d14] hover:border-purple-500/50 transition-colors cursor-pointer group fade-in">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-purple-400"><i class="fas fa-link mr-1"></i>Insight</span>
+                                <span class="text-gray-600">${time}</span>
+                            </div>
+                            <p class="text-gray-300 group-hover:text-white transition-colors">Extracted context regarding: "${text.substring(0, 20)}..."</p>
+                        </div>
+                    `);
+                }
+
+            }, 1000);
+        }
+
+        // --- Architect Logic ---
+        function generateBlueprint() {
+            const input = document.getElementById('architect-input').value;
+            if(!input) return;
+
+            document.getElementById('architect-output').classList.remove('hidden');
+            document.getElementById('architect-result').classList.add('hidden', 'opacity-0');
+            document.getElementById('architect-loader').classList.remove('hidden');
+            
+            setTimeout(() => {
+                document.getElementById('architect-loader').classList.add('hidden');
+                
+                const resultDiv = document.getElementById('architect-result');
+                resultDiv.innerHTML = `
+                    <div class="relative border-l-2 border-cyan-500/30 pl-8 pb-8">
+                        <div class="absolute -left-[11px] top-0 w-5 h-5 rounded-full bg-cyan-500 border-4 border-[#0f141d] shadow-[0_0_10px_#06b6d4]"></div>
+                        <h4 class="text-lg font-bold text-white mb-2">Phase 1: Foundation & Data Harvesting</h4>
+                        <p class="text-gray-400 text-sm mb-3">Establish core architecture to support "${input}". Connect required APIs and build initial schema.</p>
+                        <div class="flex gap-2">
+                            <span class="px-2 py-1 bg-cyan-500/10 text-cyan-400 rounded text-[10px] font-mono border border-cyan-500/20">EST: 2 WEEKS</span>
+                            <span class="px-2 py-1 bg-[#262c36] text-gray-400 rounded text-[10px] font-mono border border-[#3b4252]">DATA_ENG</span>
+                        </div>
+                    </div>
+                    <div class="relative border-l-2 border-cyan-500/30 pl-8 pb-8">
+                        <div class="absolute -left-[11px] top-0 w-5 h-5 rounded-full bg-cyan-500 border-4 border-[#0f141d] shadow-[0_0_10px_#06b6d4]"></div>
+                        <h4 class="text-lg font-bold text-white mb-2">Phase 2: Neural Model Training</h4>
+                        <p class="text-gray-400 text-sm mb-3">Train specific agents on the foundational data to handle operations autonomously.</p>
+                        <div class="flex gap-2">
+                            <span class="px-2 py-1 bg-cyan-500/10 text-cyan-400 rounded text-[10px] font-mono border border-cyan-500/20">EST: 3 WEEKS</span>
+                            <span class="px-2 py-1 bg-[#262c36] text-gray-400 rounded text-[10px] font-mono border border-[#3b4252]">ML_OPS</span>
+                        </div>
+                    </div>
+                    <div class="relative pl-8">
+                        <div class="absolute -left-[11px] top-0 w-5 h-5 rounded-full bg-cyan-500 border-4 border-[#0f141d] shadow-[0_0_10px_#06b6d4]"></div>
+                        <h4 class="text-lg font-bold text-white mb-2">Phase 3: Deployment & Mesh Integration</h4>
+                        <p class="text-gray-400 text-sm mb-3">Push the system live, integrate with user-facing dashboards, and monitor telemetry.</p>
+                        <div class="flex gap-2">
+                            <span class="px-2 py-1 bg-cyan-500/10 text-cyan-400 rounded text-[10px] font-mono border border-cyan-500/20">EST: 1 WEEK</span>
+                            <span class="px-2 py-1 bg-[#262c36] text-gray-400 rounded text-[10px] font-mono border border-[#3b4252]">DEVOPS</span>
+                        </div>
+                    </div>
+                `;
+                
+                resultDiv.classList.remove('hidden');
+                setTimeout(() => resultDiv.classList.remove('opacity-0'), 50);
+            }, 2000);
+        }
+
+        // --- Foundry Logic ---
+        function forgeAgent() {
+            const input = document.getElementById('foundry-input').value;
+            if(!input) return;
+
+            document.getElementById('foundry-output').classList.remove('hidden');
+            document.getElementById('foundry-result').classList.add('hidden');
+            document.getElementById('foundry-loader').classList.remove('hidden');
+
+            setTimeout(() => {
+                document.getElementById('foundry-loader').classList.add('hidden');
+                document.getElementById('foundry-result').classList.remove('hidden');
+                // Could dynamically alter the stats here based on input for more realism
+            }, 1500);
+        }
+
+        // --- Alchemist Logic ---
+        function transmutePrompt() {
+            const input = document.getElementById('alchemist-input').value;
+            if(!input) return;
+
+            document.getElementById('alchemist-output').classList.remove('hidden');
+            document.getElementById('alchemist-result').classList.add('hidden');
+            document.getElementById('alchemist-loader').classList.remove('hidden');
+
+            setTimeout(() => {
+                document.getElementById('alchemist-loader').classList.add('hidden');
+                document.getElementById('alchemist-result').classList.remove('hidden');
+            }, 1500);
+        }
+
+        // --- Creative Canvas Logic (Particles) ---
+        let renderAnimFrame;
+        function startCanvasRender() {
+            document.getElementById('creative-placeholder').classList.add('hidden');
+            const canvas = document.getElementById('creative-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Set size
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+
+            let particles = [];
+            for(let i=0; i<100; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 3 + 1,
+                    vx: (Math.random() - 0.5) * 2,
+                    vy: (Math.random() - 0.5) * 2,
+                    hue: Math.random() * 60 + 280 // pinks/purples
+                });
+            }
+
+            if(renderAnimFrame) cancelAnimationFrame(renderAnimFrame);
+
+            function draw() {
+                ctx.fillStyle = 'rgba(5, 7, 10, 0.2)'; // trail effect
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+
+                    if(p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                    if(p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fillStyle = `hsl(${p.hue}, 80%, 60%)`;
+                    ctx.fill();
+                    
+                    // Draw connections
+                    particles.forEach(p2 => {
+                        const dx = p.x - p2.x;
+                        const dy = p.y - p2.y;
+                        const dist = Math.sqrt(dx*dx + dy*dy);
+                        if(dist < 50) {
+                            ctx.beginPath();
+                            ctx.moveTo(p.x, p.y);
+                            ctx.lineTo(p2.x, p2.y);
+                            ctx.strokeStyle = `hsla(${p.hue}, 80%, 60%, ${1 - dist/50})`;
+                            ctx.lineWidth = 0.5;
+                            ctx.stroke();
+                        }
+                    });
+                });
+
+                renderAnimFrame = requestAnimationFrame(draw);
+            }
+            draw();
+        }
+
+        // --- Terminal Logic ---
+        const termInput = document.getElementById('term-input');
+        const termCursor = document.getElementById('term-cursor');
+        
+        // Update cursor position visually
+        termInput.addEventListener('input', function() {
+            // Very rough estimate for monospace character width
+            const charWidth = 8.4; 
+            const offset = 140; // width of "root@ai-universe:~$" plus margin
+            termCursor.style.left = `calc(${offset}px + ${this.value.length * charWidth}px)`;
+        });
+
+        function handleTerminalCommand(e) {
+            if(e.key === 'Enter') {
+                const cmd = termInput.value.trim();
+                const output = document.getElementById('term-output');
+                
+                output.innerHTML += `\n<span class="text-green-600">root@ai-universe:~$</span> ${cmd}`;
+                
+                let response = "";
+                if(cmd === 'help') {
+                    response = "\nAvailable commands:\n- help : Show this message\n- clear: Clear terminal\n- ping : Check matrix uplink\n- sudo root : [ACCESS DENIED]";
+                } else if (cmd === 'clear') {
+                    output.innerHTML = "";
+                    termInput.value = "";
+                    termCursor.style.left = `140px`;
+                    return;
+                } else if (cmd === 'ping') {
+                    response = "\nPinging quantum mesh...\nReply from 192.168.q.1: time=0.001ms\nReply from 192.168.q.1: time=0.002ms";
+                } else if (cmd !== '') {
+                    response = `\nCommand not found: ${cmd}`;
+                }
+
+                if(response) {
+                    output.innerHTML += `<span class="text-gray-400">${response}</span>`;
+                }
+                
+                termInput.value = "";
+                termCursor.style.left = `140px`;
+                
+                // scroll to bottom
+                const body = document.getElementById('terminal-body');
+                body.scrollTop = body.scrollHeight;
+            }
+        }
+
+        // --- Nexus Node Canvas Logic ---
+        let nexusAnimFrame;
+        function initNexusNodes() {
+            const canvas = document.getElementById('nexus-canvas');
+            const ctx = canvas.getContext('2d');
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+
+            let nodes = [];
+            const numNodes = 40;
+            
+            for(let i=0; i<numNodes; i++) {
+                nodes.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    vx: (Math.random() - 0.5) * 1,
+                    vy: (Math.random() - 0.5) * 1,
+                    radius: Math.random() * 4 + 2,
+                    color: i % 3 === 0 ? '#f59e0b' : (i % 2 === 0 ? '#06b6d4' : '#8b5cf6')
+                });
+            }
+
+            if(nexusAnimFrame) cancelAnimationFrame(nexusAnimFrame);
+
+            function drawNexus() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                for(let i=0; i<numNodes; i++) {
+                    let n1 = nodes[i];
+                    n1.x += n1.vx;
+                    n1.y += n1.vy;
+
+                    if(n1.x < 0 || n1.x > canvas.width) n1.vx *= -1;
+                    if(n1.y < 0 || n1.y > canvas.height) n1.vy *= -1;
+
+                    // Draw connections
+                    for(let j=i+1; j<numNodes; j++) {
+                        let n2 = nodes[j];
+                        let dist = Math.hypot(n1.x - n2.x, n1.y - n2.y);
+                        if(dist < 120) {
+                            ctx.beginPath();
+                            ctx.moveTo(n1.x, n1.y);
+                            ctx.lineTo(n2.x, n2.y);
+                            ctx.strokeStyle = `rgba(255, 255, 255, ${0.15 - dist/800})`;
+                            ctx.lineWidth = 1;
+                            ctx.stroke();
+                        }
+                    }
+
+                    // Draw Node
+                    ctx.beginPath();
+                    ctx.arc(n1.x, n1.y, n1.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = n1.color;
+                    ctx.fill();
+                    // Glow
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = n1.color;
+                }
+
+                nexusAnimFrame = requestAnimationFrame(drawNexus);
+            }
+            drawNexus();
+        }
+
+        // Init initial states
+        addSystemLog("[INIT] System Boot Sequence Initiated...");
+        setTimeout(() => refreshDashboard(), 500);
+
+    </script>
+</body>
+                              </html>
